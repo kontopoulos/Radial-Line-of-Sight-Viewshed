@@ -4,7 +4,11 @@ A Java-based multi-threaded implementation of the Radial Line-of-Sight (LoS) vie
 
 ## Requirements
 
-The algorithm implemented using plain Java (corretto 11) and no extra libraries are required. Therefore, it could be easily integrated with other services such as GeoServer, without worrying about dependencies.
+The algorithm was implemented using plain Java (corretto 11) and no extra libraries are required. Therefore, it could be easily integrated with other services such as GeoServer, without worrying about dependencies.
+
+## Digital Elevation Model (DEM) source
+
+[https://prism-dem-open.copernicus.eu/pd-desk-open-access/prismDownload/COP-DEM_GLO-30-DGED__2022_1/Copernicus_DSM_10_N38_00_E022_00.tar](https://prism-dem-open.copernicus.eu/pd-desk-open-access/prismDownload/COP-DEM_GLO-30-DGED__2022_1/Copernicus_DSM_10_N38_00_E022_00.tar)
 
 ## High-Level Algorithm Implementation
 
@@ -12,8 +16,8 @@ The algorithm implemented using plain Java (corretto 11) and no extra libraries 
 
 - Observer coordinates (lon/lat in EPSG:WGS4326 - WGS84).
 - Observer's elevation in meters.
-- Maximum distance (radius) at which the LoS of the observer can reach.
-- A Digital Elevation Model (DEM) in tif.
+- Maximum distance in meters (radius) at which the LoS of the observer can reach.
+- A Digital Elevation Model (DEM) in geotif.
 - Number of threads.
 
 ### Output
@@ -72,7 +76,7 @@ The red color indicates the terrain surface which is visible from the observer.
 
 ## Further optimizations
 
-- In the current implementation, the DEMs required to calculate the viewshed based on the radius given by the user are loaded into memory and concatenated into a single raster array. For a radius greater than 200km more memory needs to be allocated for the JVM (>= 16GB). However, instead of loading and concatenating all the DEMs at once, each DEM could be loaded when needed. To do so, an algorithm needs to be implemented that finds the X/Y coordinates of the pixel in the respective DEM when the given radius exceeds the geographic limits of a single DEM, thus more DEMs than one are required to calculate the viewshed.
+- In the current implementation, the DEMs required to calculate the viewshed based on the radius given by the user are loaded into memory and concatenated into a single raster array. For a radius greater than 100km more memory needs to be allocated for the JVM. However, instead of loading and concatenating all the DEMs at once, each DEM could be loaded when needed. To do so, an algorithm needs to be implemented that finds the X/Y coordinates of the pixel in the respective DEM when the given radius exceeds the geographic limits of a single DEM, thus more DEMs than one are required to calculate the viewshed.
 
 ## License
 
