@@ -14,6 +14,7 @@ The algorithm implemented using plain Java (corretto 11) and no extra libraries 
 - Observer's elevation in meters.
 - Maximum distance (radius) at which the LoS of the observer can reach.
 - A Digital Elevation Model (DEM) in tif.
+- Number of threads.
 
 ### Output
 
@@ -43,10 +44,36 @@ Note that **mode 1** is the classic version of the viewshed algorithm that is co
 | 2 | Generates the cells that the observer sees at specific target height. This mode requires an extra input parameter called targetElevation |
 | 3 | Checks whether the target is visible from the observer. The simplest form of LoS. This mode also requires an extra input parameter called targetElevation |
 
+In the examples below, the red dot indicates the position of the observer.
+
 ### Example of mode 0
+
+The heightmap follows the colors of the spectrum. The more red the color is, the lower the elevation is from which the observer can see in the respectivbe region. The more purple the color is, the higher the elevation is from which the observer can see in the respectivbe region. There are seven color values that are used as elevation thresholds that can be seen below. Colors in between these values correspond to elevation values between the elevation values presented below.
+
+| Color Name | Hex Color Code | Elevation Value (in meters) |
+| ------ | ------ | ------ |
+| Red | 0xFFFF0000 |  0 |
+| Orange | 0xFFFFA500 |  10 |
+| Yellow | 0xFFFFFF00 |  20 |
+| Green | 0xFF00FF00 |  60 |
+| Cyan | 0xFF00FFFF |  100 |
+| Blue | 0xFF0000FF |  540 |
+| Purple | 0xFF800080 |  2000 |
+
+Elevation heights above 2km are considered insignificant and are transparent the heightmap. The above thresholds can be changed to serve each user's specific needs.
 
 ![Viewshed mode 0](images/3d_viewshed.png)
 
 ### Example of mode 1
 
+The red color indicates the terrain surface which is visible from the observer.
+
 ![Viewshed mode 1](images/terrain_viewshed.png)
+
+## Further optimizations
+
+- In the current implementation, the DEMs required to calculate the viewshed based on the radius given by the user are loaded into memory and concatenated into a single raster array. For a radius greater than 200km more memory needs to be allocated for the JVM (>= 16GB). However, instead of loading and concatenating all the DEMs at once, each DEM could be loaded when needed. To do so, an algorithm needs to be implemented that finds the X/Y coordinates of the pixel in the respective DEM when the given radius exceeds the geographic limits of a single DEM, thus more DEMs than one are required to calculate the viewshed.
+
+## License
+
+BSD 3-Clause License
